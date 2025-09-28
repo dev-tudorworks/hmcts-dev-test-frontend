@@ -1,0 +1,178 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "template.njk" %}
+
+{% block content %}
+  {{ govukBackLink({
+    text: "Back to task",
+    href: "/tasks/" + task.id
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errors
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">Edit Task</h1>
+
+      <form action="/tasks/{{ task.id }}/edit" method="post">
+        {% from 'macros/csrf.njk' import csrfProtection %}
+        {{ csrfProtection(csrfToken) }}
+
+        {{ govukInput({
+          label: {
+            text: "Title",
+            classes: "govuk-label--m",
+            isPageHeading: false
+          },
+          hint: {
+            text: "Enter a clear, descriptive title for your task"
+          },
+          id: "title",
+          name: "title",
+          value: formData.title if formData else task.title,
+          errorMessage: {
+            text: "Title is required"
+          } if errors and errors | selectattr("href", "equalto", "#title") | list | length > 0,
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukTextarea({
+          name: "description",
+          id: "description",
+          label: {
+            text: "Description",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Provide detailed information about what needs to be done"
+          },
+          value: formData.description if formData else task.description,
+          rows: 5,
+          errorMessage: {
+            text: "Description is required"
+          } if errors and errors | selectattr("href", "equalto", "#description") | list | length > 0
+        }) }}
+
+        {{ govukSelect({
+          id: "status",
+          name: "status",
+          label: {
+            text: "Status",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Update the status of this task"
+          },
+          items: [
+            {
+              value: "TODO",
+              text: "To Do",
+              selected: (formData.status == "TODO") if formData else (task.status == "TODO")
+            },
+            {
+              value: "IN_PROGRESS",
+              text: "In Progress",
+              selected: (formData.status == "IN_PROGRESS") if formData else (task.status == "IN_PROGRESS")
+            },
+            {
+              value: "COMPLETED",
+              text: "Completed",
+              selected: (formData.status == "COMPLETED") if formData else (task.status == "COMPLETED")
+            },
+            {
+              value: "CANCELLED",
+              text: "Cancelled",
+              selected: (formData.status == "CANCELLED") if formData else (task.status == "CANCELLED")
+            }
+          ]
+        }) }}
+
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="due-date-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Due Date
+            </h2>
+          </legend>
+          <div id="due-date-hint" class="govuk-hint">
+            For example, 27 3 2024 or leave blank to remove due date
+          </div>
+
+          {% set dueDateError = false %}
+          {% if errors %}
+            {% for error in errors %}
+              {% if error.href in ["#due-date-day", "#due-date-month", "#due-date-year"] %}
+                {% set dueDateError = error %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if dueDateError %}
+            <div class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ dueDateError.text }}
+            </div>
+          {% endif %}
+
+          {% set currentDay = task.dueDateDay %}
+          {% set currentMonth = task.dueDateMonth %}
+          {% set currentYear = task.dueDateYear %}
+
+          <div class="govuk-date-input" id="due-date">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="due-date-day">
+                  Day
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if dueDateError %}govuk-input--error{% endif %}" 
+                       id="due-date-day" name="due-date-day" type="text" inputmode="numeric"
+                       value="{{ formData['due-date-day'] if formData else currentDay }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="due-date-month">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if dueDateError %}govuk-input--error{% endif %}" 
+                       id="due-date-month" name="due-date-month" type="text" inputmode="numeric"
+                       value="{{ formData['due-date-month'] if formData else currentMonth }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="due-date-year">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4 {% if dueDateError %}govuk-input--error{% endif %}" 
+                       id="due-date-year" name="due-date-year" type="text" inputmode="numeric"
+                       value="{{ formData['due-date-year'] if formData else currentYear }}">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="govuk-button-group govuk-!-margin-top-6">
+          {{ govukButton({
+            text: "Update Task"
+          }) }}
+          
+          {{ govukButton({
+            text: "Cancel",
+            href: "/tasks/" + task.id,
+            classes: "govuk-button--secondary"
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

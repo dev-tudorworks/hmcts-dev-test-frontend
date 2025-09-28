@@ -7,7 +7,6 @@ import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import { glob } from 'glob';
-import favicon from 'serve-favicon';
 
 const { setupDev } = require('./development');
 
@@ -19,7 +18,7 @@ app.locals.ENV = env;
 
 new Nunjucks(developmentMode).enableFor(app);
 
-app.use(favicon(path.join(__dirname, '/public/assets/images/favicon.ico')));
+// app.use(favicon(path.join(__dirname, '/public/assets/images/favicon.ico')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

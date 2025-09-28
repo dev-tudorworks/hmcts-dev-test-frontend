@@ -1,121 +1,247 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% extends "template.njk" %}
 
-<!-- You may want to make further use of these components: https://design-system.service.gov.uk/components/
-but ultimately it is up to you -->
-
 {% block content %}
-  <h1 class="govuk-heading-xl">Welcome to your dev test!</h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Task Management System</h1>
+      <p class="govuk-body-l">Manage your tasks efficiently with our comprehensive task management system.</p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      {{ govukButton({
+        text: "Create New Task",
+        href: "/tasks/create",
+        classes: "govuk-button--secondary govuk-!-margin-bottom-4"
+      }) }}
+    </div>
+  </div>
 
-  <!-- The freedom is yours. You can design the solution however you like, however there is a starting point provided
-  to ensure you have both services running. You may want to make use of the Gov UK Components:
-  https://design-system.service.gov.uk/components/ to add tabs and so forth :) -->
+  {% if error %}
+    <div class="govuk-error-summary" role="alert" aria-labelledby="error-summary-title" tabindex="-1">
+      <h2 class="govuk-error-summary__title" id="error-summary-title">
+        There is a problem
+      </h2>
+      <div class="govuk-error-summary__body">
+        <p class="govuk-body">{{ error }}</p>
+      </div>
+    </div>
+  {% endif %}
 
-  {% if example.id %}
+  <!-- Task Statistics -->
+  {% if statistics %}
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">Task Overview</h2>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #f3f2f1;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.totalTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">Total Tasks</div>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #fff2d3;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.todoTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">To Do</div>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #d2e2f1;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.inProgressTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">In Progress</div>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #d4f1d0;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.completedTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">Completed</div>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #f6f6f6;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.cancelledTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">Cancelled</div>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-sixth">
+            <div class="govuk-panel govuk-panel--confirmation" style="background-color: #f7d7da;">
+              <h3 class="govuk-panel__title" style="color: #0b0c0c;">{{ statistics.overdueTasks }}</h3>
+              <div class="govuk-panel__body" style="color: #0b0c0c;">Overdue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
-    {{ govukSummaryList({
-      rows: [
-        {
-          key: {
-            text: "ID"
-          },
-          value: {
-            text: example.id
-          },
-          actions: {
-            items: [
-              {
-                href: "#",
-                text: "Change",
-                visuallyHiddenText: "change case id ?!"
-              }
-            ]
-          }
-        },
-        {
-          key: {
-            text: "Case Number"
-          },
-          value: {
-            text: example.caseNumber
-          },
-          actions: {
-            items: [
-              {
-                href: "#",
-                text: "Change",
-                visuallyHiddenText: "change case number"
-              }
-            ]
-          }
-        },
-        {
-          key: {
-            text: "Title"
-          },
-          value: {
-            html: example.title
-          },
-          actions: {
-            items: [
-              {
-                href: "#",
-                text: "Change",
-                visuallyHiddenText: "change case title"
-              }
-            ]
-          }
-        },
-        {
-          key: {
-            text: "Description"
-          },
-          value: {
-            html: example.description
-          },
-          actions: {
-            items: [
-               {
-                 href: "#",
-                 text: "Delete",
-                 visuallyHiddenText: "Delete description"
-               },
-               {
-                 href: "#",
-                 text: "Change",
-                 visuallyHiddenText: "Change description"
-               }
-            ]
-          }
-        },
-        {
-          key: {
-            text: "Status"
-          },
-          value: {
-            html: example.status
-          },
-          actions: {
-            items: [
-            ]
-          }
-        },
-        {
-          key: {
-           text: "Created Date"
-          },
-          value: {
-           html: example.createdDate
-          },
-          actions: {
-           items: [
-           ]
-          }
-        }
-      ]
-    }) }}
+  <!-- Filter and Search Controls -->
+  <div class="govuk-grid-row govuk-!-margin-bottom-4">
+    <div class="govuk-grid-column-one-half">
+      <h3 class="govuk-heading-s">Filter by Status</h3>
+      <div class="govuk-button-group">
+        <a href="/" class="govuk-link {% if currentFilter == 'all' %}govuk-!-font-weight-bold{% endif %}">All Tasks</a>
+        <a href="/tasks/filter/TODO" class="govuk-link {% if currentFilter == 'TODO' %}govuk-!-font-weight-bold{% endif %}">To Do</a>
+        <a href="/tasks/filter/IN_PROGRESS" class="govuk-link {% if currentFilter == 'IN_PROGRESS' %}govuk-!-font-weight-bold{% endif %}">In Progress</a>
+        <a href="/tasks/filter/COMPLETED" class="govuk-link {% if currentFilter == 'COMPLETED' %}govuk-!-font-weight-bold{% endif %}">Completed</a>
+        <a href="/tasks/filter/CANCELLED" class="govuk-link {% if currentFilter == 'CANCELLED' %}govuk-!-font-weight-bold{% endif %}">Cancelled</a>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <form action="/tasks/search" method="get">
+        <h3 class="govuk-heading-s">Search Tasks</h3>
+        <div class="govuk-form-group">
+          <input class="govuk-input govuk-!-width-three-quarters" id="search" name="q" type="text" 
+                 value="{{ searchTerm if searchTerm else '' }}" 
+                 placeholder="Search by title or description...">
+          <button type="submit" class="govuk-button govuk-!-margin-left-2">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
+  <!-- Tasks Table -->
+  {% if tasks and tasks.length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">
+          Tasks 
+          {% if currentFilter == 'search' and searchTerm %}
+            - Search results for "{{ searchTerm }}"
+          {% elif currentFilter != 'all' %}
+            - {{ currentFilter | replace('_', ' ') | title }}
+          {% endif %}
+          ({{ tasks.length }} {{ 'task' if tasks.length == 1 else 'tasks' }})
+        </h2>
+
+        {% set tableRows = [] %}
+        {% for task in tasks %}
+          {% set statusTag %}
+            {% if task.status == 'TODO' %}
+              {{ govukTag({ text: 'To Do', classes: 'govuk-tag--yellow' }) }}
+            {% elif task.status == 'IN_PROGRESS' %}
+              {{ govukTag({ text: 'In Progress', classes: 'govuk-tag--blue' }) }}
+            {% elif task.status == 'COMPLETED' %}
+              {{ govukTag({ text: 'Completed', classes: 'govuk-tag--green' }) }}
+            {% elif task.status == 'CANCELLED' %}
+              {{ govukTag({ text: 'Cancelled', classes: 'govuk-tag--grey' }) }}
+            {% endif %}
+          {% endset %}
+
+          {% set dueDate = task.formattedDueDate %}
+          {% set isOverdue = task.isOverdue %}
+
+          {% set tableRows = (tableRows.push([
+            {
+              html: '<a href="/tasks/' + task.id + '" class="govuk-link">' + task.title + '</a>'
+            },
+            {
+              text: (task.description | slice(0, 50) + '...' if task.description and task.description.length > 50 else (task.description or 'No description'))
+            },
+            {
+              html: statusTag
+            },
+            {
+              html: '<span class="' + ('govuk-error-message' if isOverdue else '') + '">' + dueDate + ('</span>' if isOverdue else '</span>')
+            },
+            {
+              html: '
+                <a href="/tasks/' + task.id + '/edit" class="govuk-link">Edit</a>
+                <span class="govuk-visually-hidden">, </span>
+                <form method="post" action="/tasks/' + task.id + '/delete" style="display: inline;" 
+                      onsubmit="return confirm(\'Are you sure you want to delete this task?\')">
+                  <button type="submit" class="govuk-link" style="background: none; border: none; color: #1d70b8; text-decoration: underline; cursor: pointer;">Delete</button>
+                </form>
+              '
+            }
+          ]), tableRows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          head: [
+            { text: "Title" },
+            { text: "Description" },
+            { text: "Status" },
+            { text: "Due Date" },
+            { text: "Actions" }
+          ],
+          rows: tableRows
+        }) }}
+      </div>
+    </div>
+  {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">
+          {% if currentFilter == 'search' and searchTerm %}
+            No tasks found for "{{ searchTerm }}"
+          {% elif currentFilter != 'all' %}
+            No {{ currentFilter | replace('_', ' ') | lower }} tasks
+          {% else %}
+            No tasks found
+          {% endif %}
+        </h2>
+        <p class="govuk-body">
+          {% if currentFilter == 'search' %}
+            Try a different search term or <a href="/" class="govuk-link">view all tasks</a>.
+          {% elif currentFilter != 'all' %}
+            <a href="/" class="govuk-link">View all tasks</a> or <a href="/tasks/create" class="govuk-link">create a new task</a>.
+          {% else %}
+            Get started by <a href="/tasks/create" class="govuk-link">creating your first task</a>.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Backward compatibility - show example case if available -->
+  {% if example and example.id %}
+    <div class="govuk-grid-row govuk-!-margin-top-8">
+      <div class="govuk-grid-column-full">
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              Legacy Case Example (for testing)
+            </span>
+          </summary>
+          <div class="govuk-details__text">
+            {{ govukSummaryList({
+              rows: [
+                {
+                  key: { text: "ID" },
+                  value: { text: example.id }
+                },
+                {
+                  key: { text: "Case Number" },
+                  value: { text: example.caseNumber }
+                },
+                {
+                  key: { text: "Title" },
+                  value: { text: example.title }
+                },
+                {
+                  key: { text: "Description" },
+                  value: { text: example.description }
+                },
+                {
+                  key: { text: "Status" },
+                  value: { text: example.status }
+                },
+                {
+                  key: { text: "Created Date" },
+                  value: { text: example.createdDate }
+                }
+              ]
+            }) }}
+          </div>
+        </details>
+      </div>
+    </div>
   {% endif %}
 
 {% endblock %}
